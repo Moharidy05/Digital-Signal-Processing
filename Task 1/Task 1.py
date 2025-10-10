@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # ==============================================================================
 # 1. Data Loading and Utility Functions
 # ==============================================================================
 
-def load_signal(filepath: str | None = None, prompt: str = "Enter the path of the signal file: ") -> tuple[np.ndarray, np.ndarray] | None:
+def load_signal(filepath: str | None = None, prompt: str = "Enter the path of the signal file: ") -> tuple[
+                                                                                                         np.ndarray, np.ndarray] | None:
     """Prompts for a signal file path (if not provided) and loads signal data."""
     if not filepath:
         filepath = input(prompt).strip()
@@ -57,13 +59,26 @@ def display_signal(indices: np.ndarray, amplitudes: np.ndarray, title: str):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
     fig.suptitle(title, fontsize=16)
 
+    # Continuous plot uses all data points for accuracy
     ax1.plot(indices, amplitudes, 'b-')
     ax1.set_title("Continuous Representation")
     ax1.set_xlabel("Time / Index")
     ax1.set_ylabel("Amplitude")
     ax1.grid(True)
 
-    ax2.stem(indices, amplitudes, basefmt="r-")
+    # For discrete plot, downsample if there are too many points
+    num_points = len(indices)
+    max_points_to_plot = 75
+
+    if num_points > max_points_to_plot:
+        step = num_points // max_points_to_plot
+        plot_indices = indices[::step]
+        plot_amplitudes = amplitudes[::step]
+    else:
+        plot_indices = indices
+        plot_amplitudes = amplitudes
+
+    ax2.stem(plot_indices, plot_amplitudes, basefmt="r-")
     ax2.set_title("Discrete Representation")
     ax2.set_xlabel("Time / Index")
     ax2.set_ylabel("Amplitude")
@@ -74,11 +89,11 @@ def display_signal(indices: np.ndarray, amplitudes: np.ndarray, title: str):
 
 
 def display_two_signals(
-    signal1: tuple[np.ndarray, np.ndarray],
-    signal2: tuple[np.ndarray, np.ndarray],
-    label1: str,
-    label2: str,
-    title: str
+        signal1: tuple[np.ndarray, np.ndarray],
+        signal2: tuple[np.ndarray, np.ndarray],
+        label1: str,
+        label2: str,
+        title: str
 ):
     """Displays two signals on the same plot for comparison."""
     indices1, amplitudes1 = signal1
